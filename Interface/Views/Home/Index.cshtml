@@ -1,0 +1,106 @@
+﻿@model List<PostViewModel>
+
+@{
+    ViewBag.Title = "DevBlog - Welcome";
+}
+    <!-- Hero -->
+    <section class="flex flex-col items-center justify-center text-center px-4 pt-40 pb-20 bg-gradient-to-b from-indigo-50 to-white">
+        <h2 class="text-5xl md:text-6xl font-extrabold text-gray-800">
+            Share Your Ideas with the World ✍️
+        </h2>
+        <p class="mt-4 text-lg text-gray-600 max-w-xl">
+            A modern platform to write and share your technical articles with a growing developer community.
+        </p>
+        <div class="mt-6 flex gap-4">
+            <a href="@Url.Action("Index", "Guest", new {pageNumber= 1})"  class="bg-indigo-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-indigo-700">Explore Blogs</a>
+            <a href="register.html" class="border border-indigo-600 text-indigo-600 px-6 py-3 rounded-lg text-lg hover:bg-indigo-50">Get Started</a>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="py-20 px-6 bg-white pt-56 pb-40">
+        <div class="max-w-5xl mx-auto text-center">
+            <h3 class="text-3xl font-bold text-gray-800 mb-10">Why Choose DevBlog?</h3>
+            <div class="grid md:grid-cols-3 gap-10">
+                <div class="p-6 bg-gray-50 rounded-2xl shadow">
+                    <h4 class="text-xl font-semibold text-indigo-600">Easy to Use</h4>
+                    <p class="mt-2 text-gray-600">Write and publish blogs with a clean, user-friendly interface.</p>
+                </div>
+                <div class="p-6 bg-gray-50 rounded-2xl shadow">
+                    <h4 class="text-xl font-semibold text-indigo-600">Developer Focused</h4>
+                    <p class="mt-2 text-gray-600">A community tailored for developers and tech enthusiasts.</p>
+                </div>
+                <div class="p-6 bg-gray-50 rounded-2xl shadow">
+                    <h4 class="text-xl font-semibold text-indigo-600">Free & Open</h4>
+                    <p class="mt-2 text-gray-600">Start writing for free and reach an audience worldwide.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Blogs -->
+    <section id="blogs" class="py-20 px-6 bg-gray-50 pt-40 pb-40">
+        <div class="max-w-5xl mx-auto text-center">
+            <h3 class="text-3xl font-bold text-gray-800 mb-10">Latest Blogs</h3>
+            @* <div class="grid md:grid-cols-3 gap-10">
+                <div class="bg-white rounded-xl shadow p-5">
+                    <img src="https://via.placeholder.com/400x200" alt="Blog" class="rounded-lg mb-4">
+                    <h4 class="text-xl font-semibold">Getting Started with AI</h4>
+                    <p class="text-gray-600 mt-2">A quick guide to understanding the basics of Artificial Intelligence...</p>
+                    <a href="post.html" class="text-indigo-600 mt-3 inline-block">Read More →</a>
+                </div>
+                <div class="bg-white rounded-xl shadow p-5">
+                    <img src="https://via.placeholder.com/400x200" alt="Blog" class="rounded-lg mb-4">
+                    <h4 class="text-xl font-semibold">Mastering JavaScript</h4>
+                    <p class="text-gray-600 mt-2">Tips and tricks to level up your JavaScript skills as a developer...</p>
+                    <a href="post.html" class="text-indigo-600 mt-3 inline-block">Read More →</a>
+                </div>
+                <div class="bg-white rounded-xl shadow p-5">
+                    <img src="https://via.placeholder.com/400x200" alt="Blog" class="rounded-lg mb-4">
+                    <h4 class="text-xl font-semibold">Cloud Computing Basics</h4>
+                    <p class="text-gray-600 mt-2">Learn how cloud services are changing the way we build apps...</p>
+                    <a href="post.html" class="text-indigo-600 mt-3 inline-block">Read More →</a>
+                </div>
+            </div> *@
+            <section class="max-w-6xl mx-auto px-4 py-12">
+               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var post in Model)
+                        {
+                        <partial name="~/Views/Post/_PostCard.cshtml" model="post" />
+                    }
+                    }
+                    else
+                    {
+                        <div class="col-span-full text-center py-12">
+                            <p class="text-gray-500 text-lg">No posts found right now.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="py-20 px-6 bg-white pt-56 pb-40">
+        <div class="max-w-4xl mx-auto text-center">
+            <h3 class="text-3xl font-bold text-gray-800 mb-10">What People Say</h3>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="p-6 bg-gray-50 rounded-xl shadow">
+                    <p class="text-gray-600">"DevBlog helped me share my knowledge and connect with other developers easily!"</p>
+                    <h4 class="mt-4 font-semibold text-indigo-600">— Sarah M.</h4>
+                </div>
+                <div class="p-6 bg-gray-50 rounded-xl shadow">
+                    <p class="text-gray-600">"A simple yet powerful platform for blogging about technology."</p>
+                    <h4 class="mt-4 font-semibold text-indigo-600">— Ahmed K.</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-20 px-6 bg-indigo-600 text-center text-white">
+        <h3 class="text-3xl font-bold mb-4">Ready to Start Your Journey?</h3>
+        <p class="mb-6">Join DevBlog today and share your knowledge with the world.</p>
+        <a href="register.html" class="bg-white text-indigo-600 px-6 py-3 rounded-lg text-lg hover:bg-gray-100">Get Started</a>
+    </section>

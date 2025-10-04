@@ -1,0 +1,126 @@
+﻿@model PostDetailsViewModel
+
+<section class="max-w-4xl mx-auto px-4 py-12">
+    <!-- Cover -->
+    <div class="mb-8">
+        <img src="@Model?.Post?.CoverUrl" alt="@Model?.Post?.Title"
+             class="w-full h-96 object-cover rounded-2xl shadow">
+    </div>
+
+    <!-- Title -->
+    <h1 class="text-3xl font-bold text-gray-900 mb-4">
+        @Model?.Post?.Title
+    </h1>
+
+    <!-- Meta Info -->
+    <div class="flex items-center gap-6 text-sm text-gray-500 mb-6">
+        <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>@Model?.Post?.CreationDate.ToString("MMM d, yyyy")</span>
+        </div>
+
+        @* Reacts *@
+        <div class="flex items-center gap-2">
+            <button id="react-btn" data-post-id="@Model?.Post?.PostId"
+                    class="focus:outline-none">
+                <svg id="heart-icon"
+                     xmlns="http://www.w3.org/2000/svg"
+                     class="w-6 h-6 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+            </button>
+            <span id="react-count">@Model?.Post.Reacts</span>
+        </div>
+
+
+        <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="w-5 h-5 text-gray-500"
+                 fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2c-3.3 0-9.8 1.7-9.8 5v2.7h19.6V19c0-3.3-6.5-5-9.8-5z" />
+            </svg>
+            <span>@Model?.Post?.AuthorName</span>
+        </div>
+    </div>
+
+    <!-- Tags -->
+    <div class="flex flex-wrap gap-2 mb-8">
+        @if (Model?.Post?.Tags != null && Model.Post.Tags.Any())
+        {
+            foreach (var tag in Model?.Post?.Tags)
+            {
+                <a asp-controller="Post" asp-action="ByTag" asp-route-tag="@tag.Name"
+                   class="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-black text-xs font-semibold hover:bg-indigo-100 hover:text-indigo-600 transition-colors duration-200">
+                    @tag.Name
+                </a>
+            }
+        }
+    </div>
+
+    <!-- Content -->
+    <article class="prose max-w-none">
+        @Html.Raw(Model?.Post?.Content)
+    </article>
+
+    <!-- Comments Section -->
+    <section class="mt-12">
+        <h2 class="text-xl font-bold mb-4">Comments</h2>
+
+        @if (Model?.Comments != null && Model.Comments.Any())
+        {
+            <div class="space-y-6">
+                @foreach (var comment in Model.Comments)
+                {
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="w-5 h-5 text-gray-500"
+                                 fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2c-3.3 0-9.8 1.7-9.8 5v2.7h19.6V19c0-3.3-6.5-5-9.8-5z" />
+                            </svg>
+                            <span class="font-semibold text-gray-800">@comment.User?.UserName</span>
+                        </div>
+                        <p class="text-gray-700">@comment.Content</p>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-gray-500">No comments yet. Be the first to comment!</p>
+        }
+    </section>
+    
+</section>
+
+
+
+
+@section Scripts {
+    <script>
+        document.getElementById("react-btn")?.addEventListener("click", function () {
+            const postId = this.dataset.postId;
+
+            fetch('/Post/ToggleReact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({ postId: postId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("react-count").innerText = data.reacts;
+                    document.getElementById("heart-icon").classList.add("text-red-500");
+                    document.getElementById("heart-icon").classList.remove("text-gray-400");
+                }
+            });
+        });
+    </script>
+}
