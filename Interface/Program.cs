@@ -30,6 +30,8 @@ namespace Interface
                 options.Password.RequireDigit = false;
             }).AddEntityFrameworkStores<ApplicationContext>();
 
+            builder.Services.AddAutoMapper(typeof(Program));
+
             //Custom Services
             builder.Services.AddScoped<IPostService,PostService>();
 

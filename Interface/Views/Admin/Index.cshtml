@@ -1,0 +1,75 @@
+﻿@* @model AdminDashboardViewModel *@
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Dashboard Overview";
+}
+
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+    <div class="bg-white shadow rounded-2xl p-6">
+        <h3 class="text-gray-500 text-sm">Total Users</h3>
+        @* <p class="text-3xl font-bold text-indigo-600">@Model.TotalUsers</p> *@
+    </div>
+    <div class="bg-white shadow rounded-2xl p-6">
+        <h3 class="text-gray-500 text-sm">Total Posts</h3>
+        @* <p class="text-3xl font-bold text-indigo-600">@Model.TotalPosts</p> *@
+    </div>
+    <div class="bg-white shadow rounded-2xl p-6">
+        <h3 class="text-gray-500 text-sm">Total Categories</h3>
+        @* <p class="text-3xl font-bold text-indigo-600">@Model.TotalCategories</p> *@
+    </div>
+    <div class="bg-white shadow rounded-2xl p-6">
+        <h3 class="text-gray-500 text-sm">Total Comments</h3>
+        @* <p class="text-3xl font-bold text-indigo-600">@Model.TotalComments</p> *@
+    </div>
+</div>
+
+<!-- Activity Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Latest Posts -->
+    <div class="bg-white shadow rounded-2xl p-6">
+        <h2 class="text-xl font-semibold mb-4">Latest Posts</h2>
+        <ul class="divide-y">
+            @* @foreach (var post in Model.LatestPosts)
+            {
+                <li class="py-3 flex justify-between">
+                    <span>@post.Title</span>
+                    <span class="text-gray-500 text-sm">@post.CreationDate.ToString("MMM dd")</span>
+                </li>
+            } *@
+        </ul>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="bg-white shadow rounded-2xl p-6">
+        <h2 class="text-xl font-semibold mb-4">New Users</h2>
+        <ul class="divide-y">
+           @*  @foreach (var user in Model.RecentUsers)
+            {
+                <li class="py-3 flex justify-between items-center">
+                    <span>@user.UserName</span>
+                    <span class="text-sm text-gray-500">@user.Email</span>
+                </li>
+            } *@
+        </ul>
+    </div>
+</div>
+
+<!-- Custom Stats Section -->
+<div class="bg-white shadow rounded-2xl p-6 mt-10">
+    <h2 class="text-xl font-semibold mb-4">Performance Overview</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-indigo-50 p-5 rounded-xl">
+            <p class="text-gray-600 text-sm">Average Posts per User</p>
+            @* <p class="text-2xl font-bold text-indigo-700">@Model.AvgPostsPerUser.ToString("0.0")</p> *@
+        </div>
+        <div class="bg-green-50 p-5 rounded-xl">
+            <p class="text-gray-600 text-sm">Most Active Category</p>
+            @* <p class="text-2xl font-bold text-green-700">@Model.MostActiveCategory</p> *@
+        </div>
+        <div class="bg-yellow-50 p-5 rounded-xl">
+            <p class="text-gray-600 text-sm">Most Reacted Post</p>
+            @* <p class="text-2xl font-bold text-yellow-700">@Model.TopPostTitle</p> *@
+        </div>
+    </div>
+</div>
