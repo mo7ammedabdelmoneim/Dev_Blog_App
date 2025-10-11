@@ -9,16 +9,16 @@
 <body class="bg-gray-100 flex">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-white shadow-md min-h-screen">
+    <aside class="fixed top-0 left-0 w-64 h-screen bg-white shadow-md flex flex-col z-50">
         <div class="p-6 border-b">
             <h1 class="text-2xl font-bold text-indigo-600">&lt;/&gt; DevBlog Admin</h1>
         </div>
-        <nav class="p-4 space-y-2">
+
+        <nav class="p-4 space-y-2 flex-1 overflow-y-auto">
             <a asp-controller="Admin" asp-action="Index"
                class="block px-4 py-2 rounded-lg hover:bg-indigo-100 font-medium text-gray-700">🏠 Dashboard</a>
 
-            @* <a asp-controller="AdminPosts" asp-action="Index" *@
-            <a asp-controller="Admin" asp-action="PostIndex"
+            <a asp-controller="AdminPosts" asp-action="Index"
                class="block px-4 py-2 rounded-lg hover:bg-indigo-100 font-medium text-gray-700">📝 Posts</a>
 
             <a asp-controller="AdminCategories" asp-action="Index"
@@ -33,17 +33,21 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 p-8">
+    <main class="ml-64 flex-1 p-8">
         <header class="flex justify-between items-center mb-8">
             <h2 class="text-3xl font-bold text-gray-800">@ViewData["Title"]</h2>
-            <a asp-controller="Auth" asp-action="Logout"
-               class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Logout</a>
+            @if (Context.Request.Path == "/Admin")
+            {
+                <a asp-controller="Auth" asp-action="Logout"
+                   class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Logout</a>
+            }
         </header>
 
         <section>
             @RenderBody()
         </section>
     </main>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>

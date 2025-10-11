@@ -25,7 +25,7 @@ namespace Source.Models
             }
         }
 
-        public string? CoverUrl { get; set; } = "/img/DefaultPostImage.jfif";
+        public string? CoverUrl { get; set; } = "/uploads/posts/Default.jpeg";
 
         [Required]
         public string Content { get; set; }
