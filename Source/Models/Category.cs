@@ -12,7 +12,8 @@ namespace Source.Models
        
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Category name is required")]
+        [StringLength(40,MinimumLength =3,ErrorMessage ="Name Must be Between 3 to 30 char")]
         public string Name { get; set; }
 
         public DateTime CreationDate { get; set; } = DateTime.Now;

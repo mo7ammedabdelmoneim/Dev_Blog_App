@@ -1,0 +1,66 @@
+﻿@model IEnumerable<Category>
+@{
+    ViewData["Title"] = "Categories";
+    Layout = "_AdminLayout";
+    var counter = 0;
+}
+
+<div class="bg-white shadow-md rounded-lg p-6">
+
+    <partial name="_AddCat.cshtml" model="new Category()" />
+
+
+    <!-- Categories Table -->
+    <table class="min-w-full border border-gray-200 rounded-lg">
+        <thead class="bg-gray-100 text-gray-600 uppercase text-sm">
+            <tr>
+                <th class="py-3 px-4 text-left">#</th>
+                <th class="py-3 px-4 text-left">Name</th>
+                <th class="py-3 px-4 text-left">Creation Date</th>
+                <th class="py-3 px-4 text-left">Posts Count</th>
+                <th class="py-3 px-4 text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-700">
+            @if (TempData["Error"] != null)
+            {
+                <div class="mb-4 p-4 rounded-lg bg-red-100 border border-red-300 text-red-700 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 5a7 7 0 110 14a7 7 0 010-14z" />
+                    </svg>
+                    <span>@TempData["Error"]</span>
+                </div>
+            }            @foreach (var category in Model)
+            {
+                counter++;
+
+                <tr class="border-t">
+                    <td class="py-2 px-4">@counter</td>
+                    <td class="py-2 px-4 font-medium">@category.Name</td>
+                    <td class="py-2 px-4 font-medium">@category.CreationDate.ToString("yyyy-MM-dd")</td>
+                    <td class="py-2 px-4">@category.Posts?.Count() </td>
+                    <td class="py-2 px-4 text-center">
+                        <form asp-action="Delete" method="post" class="inline">
+                            <input type="hidden" name="id" value="@category.Id" />
+                            <button type="submit"
+                                    class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            $.validator.unobtrusive.parse("form");
+        });
+    </script>
+
+}
