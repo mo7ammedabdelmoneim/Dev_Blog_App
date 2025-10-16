@@ -1,0 +1,74 @@
+﻿@model LoginUserViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 class="text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+            Or
+            <a asp-action="Register" asp-controller="Account" class="font-medium text-indigo-600 hover:text-indigo-500">
+                create a new account
+            </a>
+        </p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-6 shadow-xl rounded-2xl sm:px-10 border border-gray-100">
+            <form asp-action="Login" method="post" class="space-y-6">
+
+                <!-- Validation summary -->
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="bg-red-50 text-red-600 border border-red-200 rounded-lg p-3 text-sm">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <div>@error.ErrorMessage</div>
+                        }
+                    </div>
+                }
+
+                <!-- Email -->
+                <div class="space-y-1">
+                    <label asp-for="Email" class="block text-sm font-semibold text-gray-700 tracking-wide">Email</label>
+                    <input asp-for="Email"
+                           class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500 placeholder-gray-400"
+                           placeholder="you@example.com" />
+                    <span asp-validation-for="Email" class="text-red-500 text-xs font-medium"></span>
+                </div>
+
+                <!-- Password -->
+                <div class="space-y-1 mt-4">
+                    <label asp-for="Password" class="block text-sm font-semibold text-gray-700 tracking-wide">Password</label>
+                    <input asp-for="Password"
+                           class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500 placeholder-gray-400"
+                           placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="text-red-500 text-xs font-medium"></span>
+                </div>
+
+
+                <!-- Remember Me -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input asp-for="RememberMe" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <label asp-for="RememberMe" class="ml-2 block text-sm text-gray-700"></label>
+                    </div>
+                    <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">Forgot your password?</a>
+                </div>
+
+                <!-- Submit button -->
+                <div>
+                    <button type="submit"
+                            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
+                        Sign in
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

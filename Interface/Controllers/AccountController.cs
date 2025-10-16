@@ -77,14 +77,50 @@ namespace Interface.Controllers
 
             return View(model);
         }
-
-
-        
+     
         [HttpGet]
         public async Task<IActionResult> SignOut()
         {
             await signInManager.SignOutAsync();
-            return RedirectToAction("Register");
+            return RedirectToAction("Login");
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> LoginAsync(LoginUserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    var result = await signInManager.PasswordSignInAsync(
+                    user.UserName,
+                    model.Password,
+                    model.RememberMe,
+                    lockoutOnFailure: true
+                    );
+
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Post");
+                    }
+
+                    if (result.IsLockedOut)
+                    {
+                        ModelState.AddModelError("", "Account locked. Try again later.");
+                        return View(model);
+                    }
+                }
+
+                ModelState.AddModelError("", "Email or Password is incorrect.");
+            }
+            return View(model);
         }
 
         // URL: /Account/CreateUser?username=ali
