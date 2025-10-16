@@ -18,10 +18,6 @@ namespace Interface.Controllers
             return View();
         }
         
-        public IActionResult PostIndex()
-        {
-            return View(context.Posts.Include(p=>p.Tags).Include(p=>p.Category).Include(p=>p.User).ToList());
-        }
 
 
     }

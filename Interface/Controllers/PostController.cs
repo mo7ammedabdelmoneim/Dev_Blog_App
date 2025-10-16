@@ -1,4 +1,5 @@
 ﻿using Interface.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,6 +13,7 @@ using System.Linq;
 
 namespace Interface.Controllers
 {
+    [Authorize]
     public class PostController : Controller
     {
         private readonly ApplicationContext context;
@@ -28,6 +30,9 @@ namespace Interface.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int pageNumber = 1)
         {
+            //Categories DropDown
+            ViewBag.Categories = context.Categories.ToList();
+
             var data = new PostIndexViewModel();
 
             // get most 3 featured posts
@@ -120,7 +125,7 @@ namespace Interface.Controllers
             data.Posts = tagedPostsViewModel;
             data.TagName = tag;
             data.CurrentPage = pageNumber;
-            data.TotalPages = (int)Math.Ceiling(tagedPosts.Count / (double)pageSize);
+            data.TotalPages = (int)Math.Ceiling(context.Posts.Where(p => p.Tags.Any(t => t.Name == tag)).Count() / (double)pageSize);
             return View(data);
         }
 
@@ -147,11 +152,11 @@ namespace Interface.Controllers
                 categoryPostsViewModel.Add(post);
             }
 
-            PostByTagViewModel data = new PostByTagViewModel();
+            PostByCatViewModel data = new PostByCatViewModel();
             data.Posts = categoryPostsViewModel;
-            data.TagName = category;
+            data.CategoryName = category;
             data.CurrentPage = pageNumber;
-            data.TotalPages = (int)Math.Ceiling(postsOfCategory.Count / (double)pageSize);
+            data.TotalPages = (int)Math.Ceiling(context.Posts.Where(p => p.Category.Name == category).Count() / (double)pageSize);
             return View(data);
         }
 

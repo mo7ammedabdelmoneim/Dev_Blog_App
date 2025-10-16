@@ -25,9 +25,21 @@ namespace Interface
             //builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<Models.AppContext>();
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {   // with Reset password Rules
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequiredLength = 4;
-                options.Password.RequireDigit = false;
+                // Password settings (strong but user-friendly)
+                options.Password.RequireDigit = true;                    // at least one number
+                options.Password.RequireLowercase = true;                // at least one lowercase letter
+                options.Password.RequireUppercase = true;                // at least one uppercase letter
+                options.Password.RequireNonAlphanumeric = true;          // at least one special character
+                options.Password.RequiredLength = 8;                     // minimum length
+                options.Password.RequiredUniqueChars = 1;                // at least one unique character
+
+                // User settings
+                options.User.RequireUniqueEmail = true;                  // emails must be unique
+
+                // Lockout settings (optional, security feature)
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
             }).AddEntityFrameworkStores<ApplicationContext>();
 
             builder.Services.AddAutoMapper(typeof(Program));
@@ -47,6 +59,8 @@ namespace Interface
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

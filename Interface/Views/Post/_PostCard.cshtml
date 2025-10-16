@@ -1,17 +1,17 @@
 ﻿@model PostViewModel
+@using System.Text.RegularExpressions
 
 <div class="relative bg-white shadow rounded-2xl mb-8 transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl card">
-
     <!-- Image -->
     <div class="relative">
-        <img src="@Model?.CoverUrl" alt="@Model?.Title" class="w-full h-64 object-cover">
+        <img src="@Model?.CoverUrl" alt="@Model?.Title" class="w-full h-48 object-cover rounded-t-2xl">
         <div class="absolute top-4 left-4 flex flex-wrap gap-2">
             @if (Model?.Tags != null && Model.Tags.Any())
             {
                 foreach (var tag in Model.Tags)
                 {
                     <a asp-controller="Post" asp-action="ByTag" asp-route-tag="@tag.Name"
-                       class="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-black text-xs font-semibold hover:bg-indigo-100 hover:text-indigo-600 transition-colors duration-200">
+                       class=" inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-black text-xs font-semibold hover:bg-indigo-100 hover:text-indigo-600 transition-colors duration-200">
                         @tag.Name
                     </a>
                 }
@@ -22,32 +22,34 @@
     <!-- Content -->
     <div class="p-6">
         <!-- Title -->
-        <h3 class="text-2xl font-bold mb-3">
-            <a asp-controller="Post" asp-action="Details" asp-route-slug="@Model?.Slug"
-               class="card-title  transition-colors duration-200 group-hover:text-indigo-600">
+        <h3 class="text-lg font-bold mb-3">
+            <a asp-action="Details" asp-route-slug="@Model?.Slug"
+               class=" card-title transition-colors duration-200 group-hover:text-indigo-600">
                 @Model?.Title
             </a>
         </h3>
 
         <!-- Snippet -->
-        <p class="text-gray-600 leading-relaxed mb-4">
-            @(Model?.Content != null && Model.Content.Length > 200 ? Model.Content[..200] + "..." : Model?.Content)
+        <p class="text-gray-600 leading-relaxed mb-4 text-sm">
+            @{
+                var plainText = Regex.Replace(Model?.Content ?? "", "<.*?>", string.Empty);
+                var snippet = plainText.Length > 120 ? plainText[..120] + "..." : plainText;
+            }
+            @snippet
         </p>
 
+
         <!-- Meta -->
-        <div class="flex items-center justify-between text-sm text-gray-500">
+        <div class="flex items-center justify-between text-xs text-gray-500">
             <div class="flex items-center gap-2">
-                <!-- calendar icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span>@Model?.CreationDate.ToString("MMM d, yyyy")</span>
             </div>
 
-            <!-- reacts -->
-            <div class="flex items-center gap-2 text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="w-5 h-5 text-indigo-600"
+            <div class="flex items-center gap-1 text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-indigo-600"
                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
                           d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -58,18 +60,18 @@
 
         <!-- Author + Read more -->
         <div class="mt-4 flex items-center justify-between">
-            <div class="flex items-center gap-2 text-sm text-gray-700">
+            <div class="flex items-center gap-2 text-xs text-gray-700">
                 <svg xmlns="http://www.w3.org/2000/svg"
-                     class="w-5 h-5 text-gray-500"
+                     class="w-4 h-4 text-gray-500"
                      fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2c-3.3 0-9.8 1.7-9.8 5v2.7h19.6V19c0-3.3-6.5-5-9.8-5z" />
                 </svg>
                 <span>@Model?.AuthorName</span>
             </div>
-            <a asp-controller="Post" asp-action="Details" asp-route-slug="@Model?.Slug"
-               class="text-indigo-600 hover:underline text-sm font-medium flex items-center gap-1">
+            <a asp-action="Details" asp-route-slug="@Model?.Slug"
+               class="text-indigo-600 hover:underline text-xs font-medium flex items-center gap-1">
                 Read more →
             </a>
         </div>
     </div>
-</div>
+</div>          
