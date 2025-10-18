@@ -79,7 +79,7 @@ namespace Interface.Controllers
         }
      
         [HttpGet]
-        public async Task<IActionResult> SignOut()
+        public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Login");
