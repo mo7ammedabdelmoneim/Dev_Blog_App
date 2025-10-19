@@ -26,3 +26,4 @@ Thumbs.db
 
 # Tailwind output (if generated automatically)
 wwwroot/css/tailwind.css.map
+Interface/appsettings.json

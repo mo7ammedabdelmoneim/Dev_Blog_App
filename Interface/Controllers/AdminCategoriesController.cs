@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using source;
 using Source.Models;
 
 namespace Interface.Controllers
 {
+    [Authorize]
     public class AdminCategoriesController : Controller
     {
         private readonly ApplicationContext context;

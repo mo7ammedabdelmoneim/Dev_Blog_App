@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace Interface.Controllers
 {
-    [Authorize]
+    
     public class PostController : Controller
     {
         private readonly ApplicationContext context;
@@ -88,6 +88,7 @@ namespace Interface.Controllers
         [HttpPost]
         public async Task<IActionResult> ToggleReact(Guid postId)
         {
+
             var post = await postService.GetById(postId);
             if (post == null)
                 return NotFound();

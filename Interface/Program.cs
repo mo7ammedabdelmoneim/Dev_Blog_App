@@ -42,6 +42,16 @@ namespace Interface
                 options.Lockout.AllowedForNewUsers = true;
             }).AddEntityFrameworkStores<ApplicationContext>();
 
+            builder.Services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    var google = builder.Configuration.GetSection("Authentication:Google");
+
+                    options.ClientId = google["ClientId"]!;
+                    options.ClientSecret = google["ClientSecret"]!;
+                    options.CallbackPath = "/signin-google";
+                });
+
             builder.Services.AddAutoMapper(typeof(Program));
 
             //Custom Services

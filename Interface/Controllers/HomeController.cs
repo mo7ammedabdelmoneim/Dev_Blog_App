@@ -22,6 +22,9 @@ namespace Interface.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if(User.Identity.IsAuthenticated)
+                return RedirectToAction("Index","Post");
+
             var homePagePosts = await context.Posts.Include(p => p.User).Include(p => p.Tags)
                                                  .OrderByDescending(p => p.CreationDate)
                                                  .Take(3).ToListAsync();
@@ -63,14 +66,5 @@ namespace Interface.Controllers
                 Tags = post.Tags
             };
         }
-
-public async Task TakeScreenshot()
-    {
-        await new BrowserFetcher().DownloadAsync();
-        using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
-        using var page = await browser.NewPageAsync();
-        await page.GoToAsync("https://example.com");
-        await page.ScreenshotAsync("screenshot.png");
-    }
 }
 }

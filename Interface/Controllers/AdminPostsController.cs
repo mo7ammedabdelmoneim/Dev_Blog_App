@@ -1,4 +1,5 @@
 ﻿using Interface.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using Source.Models;
 
 namespace Interface.Controllers
 {
+    [Authorize]
     public class AdminPostsController : Controller
     {
         private readonly ApplicationContext context;

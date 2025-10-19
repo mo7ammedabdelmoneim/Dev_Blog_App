@@ -19,9 +19,19 @@
     <!-- Navbar -->
     <header class="bg-white shadow-md py-4 px-8 flex justify-between items-center fixed w-full top-0 z-50">
         <!-- Logo -->
-        <a asp-action="Index" asp-controller="Post" class="flex items-center gap-2">
-            <h1 class="text-2xl font-bold text-indigo-600">&lt;/&gt; DevBlog</h1>
-        </a>
+        @if (Context.Request.Path.StartsWithSegments("/Account") || Context.Request.Path == "/")
+        {
+            <a asp-action="Index" asp-controller="Home" class="flex items-center gap-2">
+                <h1 class="text-2xl font-bold text-indigo-600">&lt;/&gt; DevBlog</h1>
+            </a>
+        }
+        else
+        {
+            <!-- Logo -->
+            <a asp-action="Index" asp-controller="Post" class="flex items-center gap-2">
+                <h1 class="text-2xl font-bold text-indigo-600">&lt;/&gt; DevBlog</h1>
+            </a>
+        }
 
         <!-- Navigation -->
         <nav class="flex items-center gap-6 relative">
