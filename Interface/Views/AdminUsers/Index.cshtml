@@ -1,78 +1,275 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @model IEnumerable<AdminUserViewModel>
 @{
-    ViewBag.Title = "_AdminLayout";
+    ViewBag.Title = "Manage Users";
+    Layout = "_AdminLayout";
 }
-<div class="bg-white shadow-md rounded-2xl p-6">
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-semibold text-gray-700">Manage Users</h2>
-        <form method="get" class="flex gap-2">
-            <input type="text" name="search" placeholder="Search users..."
-                   class="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:ring-2 focus:ring-indigo-500">
-            <select name="role" class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
-                <option value="">All Roles</option>
-                @foreach (var r in ViewBag.Roles)
-                {
-                    <option value="@r">@r</option>
-                }
-            </select>
-            <button class="bg-indigo-600 text-white px-3 py-1 rounded-lg hover:bg-indigo-700 text-sm">Filter</button>
-        </form>
-    </div>
 
-    @if (TempData["Message"] != null)
-    {
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-3">
-            @TempData["Message"]
-        </div>
+<style>
+    .card-modern {
+        background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+        border: 1px solid rgba(102, 126, 234, 0.1);
     }
 
-    <div class="overflow-x-auto">
-        <table class="min-w-full text-left border border-gray-200 rounded-lg">
-            <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
-                <tr>
-                    <th class="px-4 py-2">User Name</th>
-                    <th class="px-4 py-2">Email</th>
-                    <th class="px-4 py-2">Role</th>
-                    <th class="px-4 py-2">Join Date</th>
-                    <th class="px-4 py-2 text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in Model)
-                {
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="px-4 py-2">@user.UserName</td>
-                        <td class="px-4 py-2">@user.Email</td>
-                        <td class="px-4 py-2">
-                            <form method="post" asp-action="UpdateRole" class="flex items-center gap-2">
-                                <input type="hidden" name="userId" value="@user.Id" />
-                                <select name="newRole" class="border border-gray-300 rounded-md px-2 py-1 text-sm">
-                                    @foreach (var r in ViewBag.Roles)
-                                    {
-                                        if(user.CurrentRole == r.ToString())
-                                        {
-                                            <option value="@r" selected>@r</option>
-                                        }else{
-                                            <option value="@r">@r</option>
-                                        }
-                                    
-                                    }
-                                </select>
-                                <button type="submit" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Update</button>
-                            </form>
-                        </td>
-                        <td class="px-4 py-2">@user.CreatedAt.ToString("dd MMM yyyy")</td>
-                        <td class="px-4 py-2 text-center">
-                            <form method="post" asp-action="Delete" asp-route-id="@user.Id"
-                                  onsubmit="return confirm('Are you sure you want to delete this user?');">
-                                <button type="submit"
-                                        class="text-red-600 hover:text-red-800 font-medium">Delete</button>
-                            </form>
-                        </td>
+    .table-row:hover {
+        background-color: #f8f9ff;
+        transition: background-color 0.2s ease;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-admin {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-user {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+
+    .badge-moderator {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+</style>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-2">
+            User Management
+        </h1>
+        <p class="text-lg text-gray-600">Manage all users, roles, and permissions</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-indigo-100 text-sm font-medium mb-1">Total Users</p>
+                    <p class="text-4xl font-bold">@Model.Count()</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl p-6 text-white shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-100 text-sm font-medium mb-1">Active Today</p>
+                    <p class="text-4xl font-bold">@Model.Count(u => u.CreatedAt.Date == DateTime.Now.Date)</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-orange-500 to-pink-500 rounded-2xl p-6 text-white shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-orange-100 text-sm font-medium mb-1">Roles Available</p>
+                    <p class="text-4xl font-bold">@ViewBag.Roles.Count</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card-modern rounded-2xl shadow-xl p-6">
+
+        <!-- Success Message -->
+        @if (TempData["Message"] != null)
+        {
+            <div class="bg-green-50 border-l-4 border-green-500 text-green-800 px-6 py-4 rounded-lg mb-6 flex items-center gap-3">
+                <svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span class="font-medium">@TempData["Message"]</span>
+            </div>
+        }
+
+        <!-- Filter Section -->
+        <div class="bg-gray-50 rounded-xl p-6 mb-6">
+            <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-1">All Users</h2>
+                    <p class="text-sm text-gray-600">Search and filter users by name, email, or role</p>
+                </div>
+
+                <form method="get" class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <input type="text"
+                               name="search"
+                               value="@Context.Request.Query["search"]"
+                               placeholder="Search users..."
+                               class="w-full sm:w-64 pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                    </div>
+
+                    <div class="relative">
+                        <select name="role" class="w-full sm:w-48 appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-8 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                            <option value="">All Roles</option>
+                            @foreach (var r in ViewBag.Roles)
+                            {
+                                <option value="@r" selected="@(Context.Request.Query["role"] == r.ToString())">@r</option>
+                            }
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        Filter
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead>
+                    <tr class="border-b-2 border-gray-200">
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                            User Info
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                            Email
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                            Role
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                            Join Date
+                        </th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                            Actions
+                        </th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var user in Model)
+                        {
+                            <tr class="table-row">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-12 w-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                                            <span class="text-white font-bold text-lg">
+                                                @user.UserName.Substring(0, Math.Min(2, user.UserName.Length)).ToUpper()
+                                            </span>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-bold text-gray-900">@user.UserName</div>
+                                            <div class="text-xs text-gray-500">User ID: @user.Id.Substring(0, 8)</div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-900">@user.Email</div>
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <form method="post" asp-action="UpdateRole" class="flex items-center gap-3">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <div class="relative">
+                                            <select name="newRole" class="appearance-none bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                                @foreach (var r in ViewBag.Roles)
+                                                {
+                                                    if (user.CurrentRole == r.ToString())
+                                                    {
+                                                        <option value="@r" selected>@r</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@r">@r</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                                <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            Update
+                                        </button>
+                                    </form>
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 font-medium">@user.CreatedAt.ToString("dd MMM yyyy")</div>
+                                    <div class="text-xs text-gray-500">@user.CreatedAt.ToString("hh:mm tt")</div>
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <form method="post"
+                                          asp-action="Delete"
+                                          asp-route-id="@user.Id"
+                                          onsubmit="return confirm('Are you sure you want to delete @user.UserName? This action cannot be undone.');"
+                                          class="inline">
+                                        <button type="submit" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-100 hover:text-red-700 transition flex items-center gap-2 mx-auto">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center">
+                                <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                </svg>
+                                <p class="text-gray-500 text-lg font-medium">No users found</p>
+                                <p class="text-gray-400 text-sm mt-1">Try adjusting your search or filter criteria</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

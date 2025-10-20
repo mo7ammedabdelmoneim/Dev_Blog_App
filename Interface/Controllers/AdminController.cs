@@ -86,6 +86,71 @@ namespace Interface.Controllers
             return View(model);
         }
 
+        //[Authorize(Roles = "admin")]
+        public async Task<IActionResult> Stats()
+        {
+            var monthlyUserGrowth = await context.Users
+                .GroupBy(u => new { u.CreatedAt.Year, u.CreatedAt.Month })
+                .Select(g => new
+                {
+                    Month = $"{g.Key.Month}/{g.Key.Year}",
+                    Count = g.Count()
+                }).ToListAsync();
+
+            var monthlyPostGrowth = await context.Posts
+                .GroupBy(p => new { p.CreationDate.Year, p.CreationDate.Month })
+                .Select(g => new
+                {
+                    Month = $"{g.Key.Month}/{g.Key.Year}",
+                    Count = g.Count()
+                }).ToListAsync();
+
+            var postsWithComments = await context.Posts
+                .Include(p => p.Comments)
+                .Include(p => p.PostReacts)
+                .ToListAsync();
+
+            double avgCommentsPerPost = postsWithComments.Any()
+                ? postsWithComments.Average(p => p.Comments.Count)
+                : 0;
+
+            double avgReactsPerPost = postsWithComments.Any()
+                ? postsWithComments.Average(p => p.PostReacts.Count)
+                : 0;
+
+            var topCategories = await context.Categories
+                .Select(c => new
+                {
+                    c.Name,
+                    PostCount = c.Posts.Count()
+                })
+                .OrderByDescending(c => c.PostCount)
+                .Take(5)
+                .ToListAsync();
+
+            var roleCounts = await (
+                from role in context.Roles
+                join userRole in context.UserRoles on role.Id equals userRole.RoleId
+                group userRole by role.Name into g
+                select new
+                {
+                    RoleName = g.Key,
+                    Count = g.Count()
+                }
+            ).ToListAsync();
+
+            var model = new AdminStatsViewModel
+            {
+                MonthlyUserGrowth = monthlyUserGrowth,
+                MonthlyPostGrowth = monthlyPostGrowth,
+                AvgCommentsPerPost = avgCommentsPerPost,
+                AvgReactsPerPost = avgReactsPerPost,
+                TopCategories = topCategories,
+                RoleCounts = roleCounts
+            };
+
+            return View(model);
+        }
 
 
     }
