@@ -41,10 +41,9 @@ namespace source
             builder.Entity <IdentityRole >()
                 .HasData(new List <IdentityRole >()
                 {
-                    new IdentityRole{Name  = "guest" ,NormalizedName = "Guest"},
-                    new IdentityRole{Name = "user" ,NormalizedName = "User"},
-                    new IdentityRole{Name  = "manage_posts" ,NormalizedName = "Manage_posts"},
-                    new IdentityRole{Name = "admin" ,NormalizedName = "Admin"},
+                    new IdentityRole{Name = "user" ,NormalizedName = "USER"},
+                    new IdentityRole{Name  = "manage_posts" ,NormalizedName = "MANGE_POSTS"},
+                    new IdentityRole{Name = "admin" ,NormalizedName = "ADMIN"},
                 });
         }
     }

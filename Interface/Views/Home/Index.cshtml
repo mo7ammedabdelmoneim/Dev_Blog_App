@@ -3,84 +3,293 @@
 @{
     ViewBag.Title = "DevBlog - Welcome";
 }
-    <!-- Hero -->
-    <section class="flex flex-col items-center justify-center text-center px-4 pt-40 pb-20 bg-gradient-to-b from-indigo-50 to-white">
-        <h2 class="text-5xl md:text-6xl font-extrabold text-gray-800">
-            Share Your Ideas with the World ✍️
-        </h2>
-        <p class="mt-4 text-lg text-gray-600 max-w-xl">
+
+<style>
+    .gradient-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .feature-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        transition: all 0.3s ease;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+    .blog-card {
+        background: white;
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.15);
+        }
+</style>
+
+<!-- Hero Section -->
+<section class="flex flex-col items-center justify-center text-center px-4 pt-32 pb-20 bg-gradient-to-b from-indigo-50 via-purple-50 to-white">
+    <div class="max-w-5xl mx-auto">
+        <div class="inline-flex items-center px-4 py-2 bg-indigo-100 rounded-full mb-6">
+            <span class="text-indigo-700 font-semibold text-sm">🎉 New: Markdown Editor Available</span>
+        </div>
+
+        <h1 class="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 leading-tight">
+            Share Your Ideas<br />
+            <span class="gradient-text">with the World</span> ✍️
+        </h1>
+
+        <p class="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto">
             A modern platform to write and share your technical articles with a growing developer community.
         </p>
-        <div class="mt-6 flex gap-4">
-            <a href="@Url.Action("Index", "Guest", new {pageNumber= 1})"  class="bg-indigo-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-indigo-700">Explore Blogs</a>
-        <a asp-action="Register" asp-controller="Account" class="border border-indigo-600 text-indigo-600 px-6 py-3 rounded-lg text-lg hover:bg-indigo-50">Get Started</a>
-        </div>
-    </section>
 
-    <!-- Features -->
-    <section id="features" class="py-20 px-6 bg-white pt-56 pb-40">
-        <div class="max-w-5xl mx-auto text-center">
-            <h3 class="text-3xl font-bold text-gray-800 mb-10">Why Choose DevBlog?</h3>
-            <div class="grid md:grid-cols-3 gap-10">
-                <div class="p-6 bg-gray-50 rounded-2xl shadow">
-                    <h4 class="text-xl font-semibold text-indigo-600">Easy to Use</h4>
-                    <p class="mt-2 text-gray-600">Write and publish blogs with a clean, user-friendly interface.</p>
-                </div>
-                <div class="p-6 bg-gray-50 rounded-2xl shadow">
-                    <h4 class="text-xl font-semibold text-indigo-600">Developer Focused</h4>
-                    <p class="mt-2 text-gray-600">A community tailored for developers and tech enthusiasts.</p>
-                </div>
-                <div class="p-6 bg-gray-50 rounded-2xl shadow">
-                    <h4 class="text-xl font-semibold text-indigo-600">Free & Open</h4>
-                    <p class="mt-2 text-gray-600">Start writing for free and reach an audience worldwide.</p>
-                </div>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="@Url.Action("Index", "Guest", new {pageNumber = 1})"
+               class="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition flex items-center justify-center gap-2">
+                Explore Blogs
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+            </a>
+            <a asp-action="Register" asp-controller="Account"
+               class="w-full sm:w-auto border-2 border-indigo-600 text-indigo-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-indigo-50 transition flex items-center justify-center gap-2">
+                Get Started Free
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </a>
+        </div>
+
+        <div class="mt-16 flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span class="font-medium">Free Forever</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span class="font-medium">No Credit Card</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span class="font-medium">Easy Setup</span>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Latest Blogs -->
-    <section id="blogs" class="py-20 px-6 bg-gray-50 pt-40 pb-40">
-        <div class="max-w-5xl mx-auto text-center">
-            <h3 class="text-3xl font-bold text-gray-800 mb-10">Latest Blogs</h3>
-            <section class="max-w-6xl mx-auto px-4 py-12">
-               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var post in Model)
-                        {
-                        <partial name="~/Views/Post/_PostCard.cshtml" model="post" />
-                    }
-                    }
-                    else
-                    {
-                        <div class="col-span-full text-center py-12">
-                            <p class="text-gray-500 text-lg">No posts found right now.</p>
-                        </div>
-                    }
-                </div>
+<!-- Stats Section -->
+<section class="py-20 bg-gradient-to-r from-indigo-600 to-purple-600">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
+            <div class="space-y-2">
+                <div class="text-4xl md:text-5xl font-bold">10K+</div>
+                <div class="text-indigo-100">Active Users</div>
             </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section id="testimonials" class="py-20 px-6 bg-white pt-56 pb-40">
-        <div class="max-w-4xl mx-auto text-center">
-            <h3 class="text-3xl font-bold text-gray-800 mb-10">What People Say</h3>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="p-6 bg-gray-50 rounded-xl shadow">
-                    <p class="text-gray-600">"DevBlog helped me share my knowledge and connect with other developers easily!"</p>
-                    <h4 class="mt-4 font-semibold text-indigo-600">— Sarah M.</h4>
-                </div>
-                <div class="p-6 bg-gray-50 rounded-xl shadow">
-                    <p class="text-gray-600">"A simple yet powerful platform for blogging about technology."</p>
-                    <h4 class="mt-4 font-semibold text-indigo-600">— Ahmed K.</h4>
-                </div>
+            <div class="space-y-2">
+                <div class="text-4xl md:text-5xl font-bold">50K+</div>
+                <div class="text-indigo-100">Blog Posts</div>
+            </div>
+            <div class="space-y-2">
+                <div class="text-4xl md:text-5xl font-bold">100+</div>
+                <div class="text-indigo-100">Countries</div>
+            </div>
+            <div class="space-y-2">
+                <div class="text-4xl md:text-5xl font-bold">4.9★</div>
+                <div class="text-indigo-100">User Rating</div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Call to Action -->
-    <section class="py-20 px-6 bg-indigo-600 text-center text-white">
-        <h3 class="text-3xl font-bold mb-4">Ready to Start Your Journey?</h3>
-        <p class="mb-6">Join DevBlog today and share your knowledge with the world.</p>
-        <a asp-action="Register" asp-controller="Account" class="bg-white text-indigo-600 px-6 py-3 rounded-lg text-lg hover:bg-gray-100">Get Started</a>
-    </section>
+<!-- Features Section -->
+<section id="features" class="py-32 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+                Why Choose <span class="gradient-text">DevBlog</span>?
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Everything you need to start your blogging journey
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="feature-card p-8 rounded-2xl shadow-lg">
+                <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Easy to Use</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Write and publish blogs with a clean, user-friendly interface. No technical knowledge required.
+                </p>
+            </div>
+
+            <div class="feature-card p-8 rounded-2xl shadow-lg">
+                <div class="w-14 h-14 bg-gradient-to-br from-pink-500 to-orange-500 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Developer Focused</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    A community tailored for developers and tech enthusiasts. Share code, tutorials, and insights.
+                </p>
+            </div>
+
+            <div class="feature-card p-8 rounded-2xl shadow-lg">
+                <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-teal-500 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Free & Open</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Start writing for free and reach an audience worldwide. No hidden costs or premium tiers.
+                </p>
+            </div>
+
+            <div class="feature-card p-8 rounded-2xl shadow-lg">
+                <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Lightning Fast</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Optimized for speed and performance. Your content loads instantly for readers everywhere.
+                </p>
+            </div>
+
+            <div class="feature-card p-8 rounded-2xl shadow-lg">
+                <div class="w-14 h-14 bg-gradient-to-br from-yellow-500 to-red-500 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Secure & Private</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Your data is encrypted and protected. We respect your privacy and never sell your information.
+                </p>
+            </div>
+
+            <div class="feature-card p-8 rounded-2xl shadow-lg">
+                <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Engage Community</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Connect with readers through comments, likes, and shares. Build your audience organically.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Blogs Section -->
+<section id="blogs" class="py-32 px-4 sm:px-6 lg:px-8 bg-white">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+                Latest <span class="gradient-text">Blogs</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Discover the newest articles from our community
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var post in Model)
+                {
+                    <partial name="~/Views/Post/_PostCard.cshtml" model="post" />
+                }
+            }
+            else
+            {
+                <div class="col-span-full text-center py-12">
+                    <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <p class="text-gray-500 text-xl font-medium">No posts found right now.</p>
+                    <p class="text-gray-400 text-sm mt-2">Be the first to share your knowledge!</p>
+                </div>
+            }
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="text-center mt-12">
+                <a href="@Url.Action("Index", "Guest", new {pageNumber = 1})"
+                   class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition">
+                    View All Posts
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </a>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="testimonials" class="py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+                What People <span class="gradient-text">Say</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Hear from our community members
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition">
+                <div class="flex items-center gap-1 text-yellow-400 mb-4">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                </div>
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                    "DevBlog helped me share my knowledge and connect with other developers easily! The platform is intuitive and the community is amazing."
+                </p>
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">SM</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Sarah Miller</h4>
+                        <p class="text-sm text-gray-500">Full Stack Developer</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition">
+                <div class="flex items-center gap-1 text-yellow-400 mb-4">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1

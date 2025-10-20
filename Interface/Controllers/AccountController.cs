@@ -12,12 +12,14 @@ namespace Interface.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly ApplicationContext context;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager, ApplicationContext context)
+        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager, ApplicationContext context, RoleManager<IdentityRole> roleManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.context = context;
+            this.roleManager = roleManager;
         }
 
         [HttpGet]
@@ -53,15 +55,21 @@ namespace Interface.Controllers
                 var result = await userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Post");
-                }
-                else
-                {
+                    var roleResult = await userManager.AddToRoleAsync(user, "user");
+                    if (roleResult.Succeeded)
+                    {
+                        await signInManager.SignInAsync(user, isPersistent: false);
+                        return RedirectToAction("Index", "Post");
+                    }
                     foreach (var item in result.Errors)
                     {
                         ModelState.AddModelError("", item.Description);
                     }
+                }
+
+                foreach (var item in result.Errors)
+                {
+                    ModelState.AddModelError("", item.Description);
                 }
             }
 
@@ -176,6 +184,13 @@ namespace Interface.Controllers
 
                 var createResult = await userManager.CreateAsync(user);
                 if (!createResult.Succeeded)
+                {
+                    TempData["ErrorMessage"] = string.Join(", ", createResult.Errors.Select(e => e.Description));
+                    return RedirectToAction("Login");
+                }
+
+                var roleResult= await userManager.AddToRoleAsync(user,"user");
+                if (!roleResult.Succeeded)
                 {
                     TempData["ErrorMessage"] = string.Join(", ", createResult.Errors.Select(e => e.Description));
                     return RedirectToAction("Login");

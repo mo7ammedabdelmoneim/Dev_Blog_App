@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using source;
 
@@ -11,9 +12,11 @@ using source;
 namespace Source.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20251020135539_AddCreatedAtColToApplicationUserTab")]
+    partial class AddCreatedAtColToApplicationUserTab
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,19 +54,25 @@ namespace Source.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e15d6886-8f02-4a9b-9604-8961d8b61532",
+                            Id = "6ae80efe-ddf4-48b5-8ea0-c2ac641801a3",
+                            Name = "guest",
+                            NormalizedName = "GUEST"
+                        },
+                        new
+                        {
+                            Id = "b66644a2-0fad-4857-9c26-1cf49819c9ed",
                             Name = "user",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "08ee5cb8-3424-45ec-a9db-40af5e2d4153",
+                            Id = "ef257a8e-c9b4-42bf-a83f-aa000666d859",
                             Name = "manage_posts",
                             NormalizedName = "MANGE_POSTS"
                         },
                         new
                         {
-                            Id = "007df574-2fbb-4da7-a75e-69cae14254fc",
+                            Id = "69fb3754-1485-4de0-aed0-4ce2409ab0d3",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         });
@@ -187,7 +196,7 @@ namespace Source.Migrations
 
                     b.HasIndex("TagsId");
 
-                    b.ToTable("PostTag", (string)null);
+                    b.ToTable("PostTag");
                 });
 
             modelBuilder.Entity("Source.Models.ApplicationUser", b =>
@@ -276,7 +285,7 @@ namespace Source.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Source.Models.Comment", b =>
@@ -302,7 +311,7 @@ namespace Source.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("Source.Models.Post", b =>
@@ -342,7 +351,7 @@ namespace Source.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Posts", (string)null);
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("Source.Models.PostReacts", b =>
@@ -357,7 +366,7 @@ namespace Source.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostReactes", (string)null);
+                    b.ToTable("PostReactes");
                 });
 
             modelBuilder.Entity("Source.Models.Tag", b =>
@@ -372,7 +381,7 @@ namespace Source.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags", (string)null);
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

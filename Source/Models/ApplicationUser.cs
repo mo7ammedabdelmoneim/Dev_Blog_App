@@ -11,7 +11,7 @@ namespace Source.Models
     [Table(name:"Users")]
     public class ApplicationUser:IdentityUser
     {
-        //public DateTime Creationdate { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public List<Post> Posts { get; set; }=new List<Post>();
         public List<Comment> Comments { get; set; } =new List<Comment>();
