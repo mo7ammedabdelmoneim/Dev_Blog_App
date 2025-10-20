@@ -28,6 +28,10 @@ namespace source
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<PostReacts>()
+                .HasKey(pc => new { pc.PostId, pc.UserId }); // Define composite key
+
+
             builder.Entity<ApplicationUser>()
                 .HasMany(p => p.Posts)
                 .WithOne(c => c.User)

@@ -11,7 +11,7 @@ namespace Source.Models
     public class Comment
     {
         [Required]
-        public long Id { get; set; }
+        public Guid Id { get; set; }
         [Required]
         public string Content { get; set; }
 

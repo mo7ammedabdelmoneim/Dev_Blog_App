@@ -23,6 +23,7 @@ namespace Interface.ViewModels
         public int Reacts { get; set; }
 
         public string AuthorName { get; set; }
+
     }
 
 }

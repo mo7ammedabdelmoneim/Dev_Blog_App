@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using source;
 using Source.Models;
+using System.Security.Claims;
 
 namespace Interface.Controllers
 {
@@ -79,7 +80,7 @@ namespace Interface.Controllers
                         Title = model.Title,
                         Tags = postTags,
                         Content = model.Content,
-                        UserId = "657b14f7-9aa8-412c-98f4-39412bdde8bf",
+                        UserId = User.Claims.FirstOrDefault(c=>c.Type == ClaimTypes.NameIdentifier).Value,
                         CreationDate = DateTime.Now,
                     };
                     if (!string.IsNullOrEmpty(imageUrl))

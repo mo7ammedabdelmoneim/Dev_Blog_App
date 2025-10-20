@@ -37,8 +37,6 @@ namespace Source.Models
 
         public List<Tag>? Tags { get; set; }
 
-        public int Reacts { get; set; }
-
         [ForeignKey(nameof(User))]
         public string UserId { get; set; }
         public virtual ApplicationUser User { get; set; }
@@ -48,5 +46,7 @@ namespace Source.Models
         public virtual Category Category { get; set; }
 
         public List<Comment> Comments { get; set; } = new List<Comment>();
+
+        public List<PostReacts> PostReacts { get; set; } = new List<PostReacts>();
     }
 }

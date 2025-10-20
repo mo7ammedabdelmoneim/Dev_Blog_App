@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Source.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -58,12 +58,24 @@ namespace Source.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tags",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tags", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -181,6 +193,8 @@ namespace Source.Migrations
                     CoverUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Reacts = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -204,8 +218,7 @@ namespace Source.Migrations
                 name: "Comments",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -228,21 +241,52 @@ namespace Source.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tags",
+                name: "PostReactes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tags", x => x.Id);
+                    table.PrimaryKey("PK_PostReactes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tags_Posts_PostId",
+                        name: "FK_PostReactes_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PostReactes_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PostTag",
+                columns: table => new
+                {
+                    PostsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TagsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PostTag", x => new { x.PostsId, x.TagsId });
+                    table.ForeignKey(
+                        name: "FK_PostTag_Posts_PostsId",
+                        column: x => x.PostsId,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PostTag_Tags_TagsId",
+                        column: x => x.TagsId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -250,10 +294,10 @@ namespace Source.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1211c404-e703-4c4e-aac9-92b81245ade0", null, "guest", "Guest" },
-                    { "73ccbe9b-8a64-440b-93ba-e23f706a2ee6", null, "user", "User" },
-                    { "87b3d85b-45a7-4539-8a88-aee6697fadfa", null, "admin", "Admin" },
-                    { "e679e171-2927-4421-8096-4b8f70d9112c", null, "manage_posts", "Manage_posts" }
+                    { "02139ba2-906d-472d-aa86-5e4692e9163f", null, "user", "User" },
+                    { "5e56c1d5-c957-4295-ae7e-41c85f52d5cf", null, "manage_posts", "Manage_posts" },
+                    { "6dbe16d3-82d4-4eaa-a7bb-6b52082278f8", null, "guest", "Guest" },
+                    { "cf22682f-def0-45fb-9619-f3d872e5f477", null, "admin", "Admin" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -306,6 +350,16 @@ namespace Source.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PostReactes_PostId",
+                table: "PostReactes",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostReactes_UserId",
+                table: "PostReactes",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Posts_CategoryId",
                 table: "Posts",
                 column: "CategoryId");
@@ -316,9 +370,9 @@ namespace Source.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_PostId",
-                table: "Tags",
-                column: "PostId");
+                name: "IX_PostTag_TagsId",
+                table: "PostTag",
+                column: "TagsId");
         }
 
         /// <inheritdoc />
@@ -343,13 +397,19 @@ namespace Source.Migrations
                 name: "Comments");
 
             migrationBuilder.DropTable(
-                name: "Tags");
+                name: "PostReactes");
+
+            migrationBuilder.DropTable(
+                name: "PostTag");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Posts");
+
+            migrationBuilder.DropTable(
+                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -12,8 +12,8 @@ using source;
 namespace Source.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250913100208_AddPostReactsTable")]
-    partial class AddPostReactsTable
+    [Migration("20251020102806_UpdatePostReactsTab")]
+    partial class UpdatePostReactsTab
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,25 +54,25 @@ namespace Source.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ce4b08e3-c414-4213-b9e5-593d332b5598",
+                            Id = "3617cbfa-1885-4528-8497-f74508ad824a",
                             Name = "guest",
                             NormalizedName = "Guest"
                         },
                         new
                         {
-                            Id = "f3b26c30-079e-4034-8f96-c2cd13001cba",
+                            Id = "941aa08a-1931-40cc-95e0-ddaa8d510bfd",
                             Name = "user",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = "227ebdb2-8579-48c1-a380-d458c87411c5",
+                            Id = "fe4ec673-9701-4329-9aab-fe0020304cf3",
                             Name = "manage_posts",
                             NormalizedName = "Manage_posts"
                         },
                         new
                         {
-                            Id = "fa67f0bf-1dee-4253-8dc0-05b82922cd8c",
+                            Id = "6490cc2e-fd3e-44df-bded-aca8d581b57f",
                             Name = "admin",
                             NormalizedName = "Admin"
                         });
@@ -277,7 +277,8 @@ namespace Source.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.HasKey("Id");
 
@@ -286,11 +287,9 @@ namespace Source.Migrations
 
             modelBuilder.Entity("Source.Models.Comment", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -357,20 +356,13 @@ namespace Source.Migrations
 
             modelBuilder.Entity("Source.Models.PostReacts", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostId");
+                    b.HasKey("PostId", "UserId");
 
                     b.HasIndex("UserId");
 

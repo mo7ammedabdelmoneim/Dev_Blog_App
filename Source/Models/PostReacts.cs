@@ -9,8 +9,6 @@ namespace Source.Models
 {
     public class PostReacts
     {
-        public Guid Id { get; set; }
-
         [ForeignKey(nameof(Post))]
         public Guid PostId { get; set; }
         public Post? Post { get; set; }

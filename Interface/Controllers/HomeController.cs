@@ -32,7 +32,7 @@ namespace Interface.Controllers
             var homePagePostsModels = new List<PostViewModel>();
             foreach (var tagedPost in homePagePosts)
             {
-                var post = MapToPostViewModel(tagedPost);
+                var post = await MapToPostViewModel(tagedPost);
                 homePagePostsModels.Add(post);
             }
 
@@ -51,8 +51,9 @@ namespace Interface.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        private PostViewModel MapToPostViewModel(Post post)
+        private async Task<PostViewModel> MapToPostViewModel(Post post)
         {
+            var reacts = await context.PostReactes.CountAsync(pr => pr.PostId == post.Id);
             return new PostViewModel
             {
                 PostId = post.Id,
@@ -61,10 +62,10 @@ namespace Interface.Controllers
                 AuthorName = post.User?.UserName,
                 CoverUrl = post.CoverUrl,
                 CreationDate = post.CreationDate,
-                Reacts = post.Reacts,
+                Reacts = reacts,
                 Slug = post.Slug,
                 Tags = post.Tags
             };
         }
-}
+    }
 }

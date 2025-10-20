@@ -1,4 +1,10 @@
-﻿@model PostDetailsViewModel
+﻿@using System.Security.Claims
+@model PostDetailsViewModel
+
+@{
+    ViewBag.Title = "Post Details";
+    var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+}
 
 <section class="max-w-4xl mx-auto px-4 py-12">
     <!-- Cover -->
@@ -8,9 +14,20 @@
     </div>
 
     <!-- Title -->
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">
-        @Model?.Post?.Title
-    </h1>
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-3xl font-bold text-gray-900">
+            @Model?.Post?.Title
+        </h1>
+
+        <a asp-action="Index" asp-controller="Post"
+           class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Posts
+        </a>
+    </div>
 
     <!-- Meta Info -->
     <div class="flex items-center gap-6 text-sm text-gray-500 mb-6">
@@ -22,19 +39,19 @@
         </div>
 
         @* Reacts *@
+
         <div class="flex items-center gap-2">
-            <button id="react-btn" data-post-id="@Model?.Post?.PostId"
-                    class="focus:outline-none">
-                <svg id="heart-icon"
-                     xmlns="http://www.w3.org/2000/svg"
-                     class="w-6 h-6 text-gray-400 hover:text-red-500 transition-colors duration-200"
+            <button class="react-btn focus:outline-none" data-post-id="@Model.Post.PostId">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="w-6 h-6 transition-colors duration-200 @(Model.IsReacted ? "text-red-500" : "text-gray-400 hover:text-red-500")"
                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
                           d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
             </button>
-            <span id="react-count">@Model?.Post.Reacts</span>
+            <span id="react-count">@Model.Post.Reacts</span>
         </div>
+
 
 
         <div class="flex items-center gap-2">
@@ -68,33 +85,81 @@
 
     <!-- Comments Section -->
     <section class="mt-12">
-        <h2 class="text-xl font-bold mb-4">Comments</h2>
+        @{
+            var commentCount = Model?.Comments?.Count ?? 0;
+        }
 
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">
+                💬 @(commentCount > 0 ? $"{commentCount} Comment{(commentCount > 1 ? "s" : "")}" : "No Comments Yet")
+            </h2>
+        </div>
+
+        <!-- Existing Comments -->
         @if (Model?.Comments != null && Model.Comments.Any())
         {
-            <div class="space-y-6">
+            <div class="space-y-4">
                 @foreach (var comment in Model.Comments)
                 {
-                    <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
-                        <div class="flex items-center gap-2 mb-2">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 class="w-5 h-5 text-gray-500"
-                                 fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2c-3.3 0-9.8 1.7-9.8 5v2.7h19.6V19c0-3.3-6.5-5-9.8-5z" />
-                            </svg>
-                            <span class="font-semibold text-gray-800">@comment.User?.UserName</span>
+                    <div class="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                        <div class="flex items-center mb-2">
+                            <div>
+                                <svg style="display:inline-block" xmlns="http://www.w3.org/2000/svg"
+                                     class="w-5 h-5 text-gray-500"
+                                     fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2c-3.3 0-9.8 1.7-9.8 5v2.7h19.6V19c0-3.3-6.5-5-9.8-5z" />
+                                </svg>
+                                <span class="font-semibold text-gray-800">@comment.User?.UserName</span>
+                            </div>
                         </div>
-                        <p class="text-gray-700">@comment.Content</p>
+                        <p class="text-gray-700 leading-relaxed border-t pt-2">@comment.Content</p>
                     </div>
                 }
             </div>
         }
         else
         {
-            <p class="text-gray-500">No comments yet. Be the first to comment!</p>
+            <p class="text-gray-500 text-center italic bg-gray-50 p-4 rounded-lg">
+                No comments yet — be the first to share your thoughts 💭
+            </p>
+        }
+
+        <!-- Add Comment Form -->
+        @if (User.Identity.IsAuthenticated)
+        {
+            <form asp-action="Add" asp-controller="Comment" method="post" class="mt-8 bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Add a comment</h3>
+
+                <div class="flex items-center gap-2">
+                    <input name="CommentText"
+                           type="text"
+                           placeholder="Write your comment..."
+                           required
+                           class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+
+                    <button type="submit"
+                            class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition">
+                        Post
+                    </button>
+                </div>
+
+                <input name="UserId" type="hidden" value="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" />
+                <input name="PostId" type="hidden" value="@Model?.Post?.PostId" />
+                <input name="PostSlug" type="hidden" value="@Model?.Post?.Slug" />
+            </form>
+        }
+        else
+        {
+            <div class="mt-8 bg-gray-50 border border-gray-200 p-6 rounded-lg text-center">
+                <p class="text-gray-700 mb-3 font-medium">You must log in to add a comment 👇</p>
+                <a asp-action="Login" asp-controller="Account"
+                   class="inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
+                    Login
+                </a>
+            </div>
         }
     </section>
-    
+
 </section>
 
 
@@ -102,25 +167,44 @@
 
 @section Scripts {
     <script>
-        document.getElementById("react-btn")?.addEventListener("click", function () {
-            const postId = this.dataset.postId;
+        document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".react-btn").forEach(btn => {
+            btn.addEventListener("click", async function () {
+                const postId = btn.dataset.postId;
+                const heartIcon = btn.querySelector("svg");
+                const reactCount = btn.parentElement.querySelector("#react-count");
 
-            fetch('/Post/ToggleReact', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                },
-                body: JSON.stringify({ postId: postId })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById("react-count").innerText = data.reacts;
-                    document.getElementById("heart-icon").classList.add("text-red-500");
-                    document.getElementById("heart-icon").classList.remove("text-gray-400");
+                const isReacted = heartIcon.classList.contains("text-red-500");
+                console.log(isReacted);
+                const url = isReacted ? `/Post/UnReact?postId=${postId}` : `/Post/React?postId=${postId}`;
+
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    });
+
+                    if (response.status === 401) {
+                        window.location.href = "/Account/Login";
+                        return;
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        heartIcon.classList.toggle("text-red-500");
+                        heartIcon.classList.toggle("text-gray-400");
+                        reactCount.textContent = data.newCount;
+                    }
+                } catch (err) {
+                    console.error("Error:", err);
                 }
             });
         });
+    });
+
     </script>
 }
+

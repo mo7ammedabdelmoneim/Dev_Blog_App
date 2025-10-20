@@ -12,8 +12,8 @@ using source;
 namespace Source.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250726164436_init")]
-    partial class init
+    [Migration("20251019145139_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,25 +54,25 @@ namespace Source.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1211c404-e703-4c4e-aac9-92b81245ade0",
+                            Id = "6dbe16d3-82d4-4eaa-a7bb-6b52082278f8",
                             Name = "guest",
                             NormalizedName = "Guest"
                         },
                         new
                         {
-                            Id = "73ccbe9b-8a64-440b-93ba-e23f706a2ee6",
+                            Id = "02139ba2-906d-472d-aa86-5e4692e9163f",
                             Name = "user",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = "e679e171-2927-4421-8096-4b8f70d9112c",
+                            Id = "5e56c1d5-c957-4295-ae7e-41c85f52d5cf",
                             Name = "manage_posts",
                             NormalizedName = "Manage_posts"
                         },
                         new
                         {
-                            Id = "87b3d85b-45a7-4539-8a88-aee6697fadfa",
+                            Id = "cf22682f-def0-45fb-9619-f3d872e5f477",
                             Name = "admin",
                             NormalizedName = "Admin"
                         });
@@ -184,6 +184,21 @@ namespace Source.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("PostTag", b =>
+                {
+                    b.Property<Guid>("PostsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TagsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PostsId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("PostTag");
+                });
+
             modelBuilder.Entity("Source.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -262,7 +277,8 @@ namespace Source.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.HasKey("Id");
 
@@ -271,11 +287,9 @@ namespace Source.Migrations
 
             modelBuilder.Entity("Source.Models.Comment", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -316,6 +330,13 @@ namespace Source.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Reacts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -333,6 +354,28 @@ namespace Source.Migrations
                     b.ToTable("Posts");
                 });
 
+            modelBuilder.Entity("Source.Models.PostReacts", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PostReactes");
+                });
+
             modelBuilder.Entity("Source.Models.Tag", b =>
                 {
                     b.Property<Guid>("Id")
@@ -343,12 +386,7 @@ namespace Source.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("PostId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("PostId");
 
                     b.ToTable("Tags");
                 });
@@ -404,6 +442,21 @@ namespace Source.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PostTag", b =>
+                {
+                    b.HasOne("Source.Models.Post", null)
+                        .WithMany()
+                        .HasForeignKey("PostsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Source.Models.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Source.Models.Comment", b =>
                 {
                     b.HasOne("Source.Models.Post", "Post")
@@ -442,11 +495,23 @@ namespace Source.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Source.Models.Tag", b =>
+            modelBuilder.Entity("Source.Models.PostReacts", b =>
                 {
-                    b.HasOne("Source.Models.Post", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("PostId");
+                    b.HasOne("Source.Models.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Source.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Source.Models.ApplicationUser", b =>
@@ -464,8 +529,6 @@ namespace Source.Migrations
             modelBuilder.Entity("Source.Models.Post", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618
         }

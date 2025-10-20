@@ -10,6 +10,7 @@ using Source.Models;
 using Source.Services.Implementations;
 using Source.Services.Interfaces;
 using System.Linq;
+using System.Security.Claims;
 
 namespace Interface.Controllers
 {
@@ -40,7 +41,7 @@ namespace Interface.Controllers
             List<PostViewModel> featuredIndexPagePosts = new List<PostViewModel>();
             foreach (var post in featuredPosts)
             {
-                var indexPagePost = MapToPostViewModel(post);
+                var indexPagePost = await MapToPostViewModel(post);
 
                 featuredIndexPagePosts.Add(indexPagePost);
             }
@@ -57,7 +58,7 @@ namespace Interface.Controllers
             List<PostViewModel> latestIndexPagePosts = new List<PostViewModel>();
             foreach (var post in latestPosts)
             {
-                var indexPagePost = MapToPostViewModel(post);
+                var indexPagePost = await MapToPostViewModel(post);
 
                 latestIndexPagePosts.Add(indexPagePost);
             }
@@ -79,25 +80,58 @@ namespace Interface.Controllers
                 return NotFound();
             }
 
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            var isReacted = await context.PostReactes.AnyAsync(pr => pr.PostId == post.Id && pr.UserId == userId);
+            var postReacts = await context.PostReactes.CountAsync(pr => pr.PostId == post.Id);
+
             PostDetailsViewModel detailedPost = new PostDetailsViewModel();
-            detailedPost.Post = MapToPostViewModel(post);
+            detailedPost.Post = await MapToPostViewModel(post);
             detailedPost.Comments = post.Comments;
+            detailedPost.IsReacted = isReacted;
+
             return View(detailedPost);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ToggleReact(Guid postId)
+        [Authorize]
+        public async Task<IActionResult> React(Guid postId)
         {
-
-            var post = await postService.GetById(postId);
+            var post = await context.Posts.FindAsync(postId);
             if (post == null)
                 return NotFound();
 
-            post.Reacts += 1;
+            await context.AddAsync(new PostReacts
+            {
+                PostId = postId,
+                UserId = User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value
+            });
 
-            await postService.Save();
+            await context.SaveChangesAsync();
 
-            return Json(new { success = true, reacts = post.Reacts });
+            var reactCount = await context.PostReactes.CountAsync(pc => pc.PostId == postId);
+
+            return Json(new { success = true, newCount = reactCount });
+        }
+        
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> UnReact(Guid postId)
+        {
+            var userId = User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            var react = await context.PostReactes.FirstOrDefaultAsync(pc => pc.PostId == postId && pc.UserId == userId) ;
+            if (react == null)
+                return NotFound();
+
+
+            context.Remove(react);
+
+            await context.SaveChangesAsync();
+
+            var reactCount = await context.PostReactes.CountAsync(pc=> pc.PostId == postId);
+
+            return Json(new { success = true, newCount = reactCount });
         }
 
         [HttpGet]
@@ -118,7 +152,7 @@ namespace Interface.Controllers
             var tagedPostsViewModel = new List<PostViewModel>();
             foreach (var tagedPost in tagedPosts)
             {
-                var post = MapToPostViewModel(tagedPost);
+                var post = await MapToPostViewModel(tagedPost);
                 tagedPostsViewModel.Add(post);
             }
 
@@ -149,7 +183,7 @@ namespace Interface.Controllers
             var categoryPostsViewModel = new List<PostViewModel>();
             foreach (var catPost in postsOfCategory)
             {
-                var post = MapToPostViewModel(catPost);
+                var post = await MapToPostViewModel(catPost);
                 categoryPostsViewModel.Add(post);
             }
 
@@ -162,8 +196,23 @@ namespace Interface.Controllers
         }
 
 
-        private PostViewModel MapToPostViewModel(Post post)
+        public IActionResult add()
+        {
+            context.Add(new Comment
             {
+                Id = Guid.NewGuid(),
+                UserId = "0c5e4bab-71e7-4902-8dca-8ed359b1e793",
+                PostId = context.Posts.First().Id,
+                Content = "kbjkjdkjvfkjf"
+            });
+
+            context.SaveChanges();
+            return Content("true");
+        }
+
+        private async Task<PostViewModel> MapToPostViewModel(Post post)
+            {
+            var reacts = await context.PostReactes.CountAsync(pr => pr.PostId == post.Id);
                 return new PostViewModel
                 {
                     PostId = post.Id,
@@ -172,7 +221,7 @@ namespace Interface.Controllers
                     AuthorName = post.User?.UserName,
                     CoverUrl = post.CoverUrl,
                     CreationDate = post.CreationDate,
-                    Reacts = post.Reacts,
+                    Reacts = reacts,
                     Slug = post.Slug,
                     Tags = post.Tags
                 };

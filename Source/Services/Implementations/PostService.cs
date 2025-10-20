@@ -49,7 +49,7 @@ namespace Source.Services.Implementations
 
         public async Task<List<Post>?> GetFeaturedPosts()
         {
-            return await context.Posts.AsNoTracking().Include(p => p.User).Include(p => p.Tags).OrderByDescending(p => p.Reacts).Take(3).ToListAsync();
+            return await context.Posts.AsNoTracking().Include(p => p.User).Include(p => p.Tags).OrderByDescending(p => p.PostReacts.Count()).Take(3).ToListAsync();
         }
 
         public async Task<List<Post>?> GetLatestPosts(int pageSize, int currentPage)

@@ -51,25 +51,25 @@ namespace Source.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ce4b08e3-c414-4213-b9e5-593d332b5598",
+                            Id = "e279f3bf-c205-4e9b-a08a-846d4301bfcc",
                             Name = "guest",
                             NormalizedName = "Guest"
                         },
                         new
                         {
-                            Id = "f3b26c30-079e-4034-8f96-c2cd13001cba",
+                            Id = "e307bc34-45dc-4d79-ae9a-e19905635e8a",
                             Name = "user",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = "227ebdb2-8579-48c1-a380-d458c87411c5",
+                            Id = "8c193367-2b54-4548-856c-12b057a2c108",
                             Name = "manage_posts",
                             NormalizedName = "Manage_posts"
                         },
                         new
                         {
-                            Id = "fa67f0bf-1dee-4253-8dc0-05b82922cd8c",
+                            Id = "32836804-375a-45e1-b1eb-485771d4dc35",
                             Name = "admin",
                             NormalizedName = "Admin"
                         });
@@ -274,7 +274,8 @@ namespace Source.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.HasKey("Id");
 
@@ -283,11 +284,9 @@ namespace Source.Migrations
 
             modelBuilder.Entity("Source.Models.Comment", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -328,9 +327,6 @@ namespace Source.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Reacts")
-                        .HasColumnType("int");
-
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -354,20 +350,13 @@ namespace Source.Migrations
 
             modelBuilder.Entity("Source.Models.PostReacts", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostId");
+                    b.HasKey("PostId", "UserId");
 
                     b.HasIndex("UserId");
 
@@ -496,7 +485,7 @@ namespace Source.Migrations
             modelBuilder.Entity("Source.Models.PostReacts", b =>
                 {
                     b.HasOne("Source.Models.Post", "Post")
-                        .WithMany()
+                        .WithMany("PostReacts")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -527,6 +516,8 @@ namespace Source.Migrations
             modelBuilder.Entity("Source.Models.Post", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("PostReacts");
                 });
 #pragma warning restore 612, 618
         }
