@@ -42,7 +42,7 @@ namespace source
                 .HasData(new List <IdentityRole >()
                 {
                     new IdentityRole{Name = "user" ,NormalizedName = "USER"},
-                    new IdentityRole{Name  = "manage_posts" ,NormalizedName = "MANGE_POSTS"},
+                    new IdentityRole{Name  = "manage_posts" ,NormalizedName = "MANAGE_POSTS"},
                     new IdentityRole{Name = "admin" ,NormalizedName = "ADMIN"},
                 });
         }
