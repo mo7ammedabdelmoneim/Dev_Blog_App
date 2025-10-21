@@ -1,66 +1,228 @@
 ﻿@model IEnumerable<Category>
 @{
-    ViewData["Title"] = "Categories";
+    ViewData["Title"] = "Manage Categories";
     Layout = "_AdminLayout";
-    var counter = 0;
+    int counter = 0;
 }
 
-<div class="bg-white shadow-md rounded-lg p-6">
+<style>
+    .card-modern {
+        background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+    }
 
-    <partial name="_AddCat.cshtml" model="new Category()" />
+    .table-row:hover {
+        background-color: #f8f9ff;
+        transition: background-color 0.2s ease;
+    }
 
+    .category-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+</style>
 
-    <!-- Categories Table -->
-    <table class="min-w-full border border-gray-200 rounded-lg">
-        <thead class="bg-gray-100 text-gray-600 uppercase text-sm">
-            <tr>
-                <th class="py-3 px-4 text-left">#</th>
-                <th class="py-3 px-4 text-left">Name</th>
-                <th class="py-3 px-4 text-left">Creation Date</th>
-                <th class="py-3 px-4 text-left">Posts Count</th>
-                <th class="py-3 px-4 text-center">Actions</th>
-            </tr>
-        </thead>
-        <tbody class="text-gray-700">
-            @if (TempData["Error"] != null)
-            {
-                <div class="mb-4 p-4 rounded-lg bg-red-100 border border-red-300 text-red-700 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 5a7 7 0 110 14a7 7 0 010-14z" />
-                    </svg>
-                    <span>@TempData["Error"]</span>
+<div class="max-w-7xl mx-auto">
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-indigo-100 text-sm font-medium mb-1">Total Categories</p>
+                    <p class="text-4xl font-bold">@Model.Count()</p>
                 </div>
-            }            @foreach (var category in Model)
-            {
-                counter++;
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
 
-                <tr class="border-t">
-                    <td class="py-2 px-4">@counter</td>
-                    <td class="py-2 px-4 font-medium">@category.Name</td>
-                    <td class="py-2 px-4 font-medium">@category.CreationDate.ToString("yyyy-MM-dd")</td>
-                    <td class="py-2 px-4">@category.Posts?.Count() </td>
-                    <td class="py-2 px-4 text-center">
-                        <form asp-action="Delete" method="post" class="inline">
-                            <input type="hidden" name="id" value="@category.Id" />
-                            <button type="submit"
-                                    class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                                Delete
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        <div class="bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl p-6 text-white shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-100 text-sm font-medium mb-1">Total Posts</p>
+                    <p class="text-4xl font-bold">@Model.Sum(c => c.Posts?.Count() ?? 0)</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-orange-500 to-pink-500 rounded-2xl p-6 text-white shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-orange-100 text-sm font-medium mb-1">Most Active</p>
+                    <p class="text-2xl font-bold truncate">
+                        @if (Model.Any())
+                        {
+                            var topCategory = Model.OrderByDescending(c => c.Posts?.Count() ?? 0).FirstOrDefault();
+                            @(topCategory?.Name ?? "N/A")
+                        }
+                        else
+                        {
+                            <text>N/A</text>
+                        }
+                    </p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="mb-6 p-4 rounded-xl bg-red-50 border-l-4 border-red-500 text-red-800 flex items-center gap-3 shadow-lg">
+            <svg class="h-6 w-6 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="font-medium">@TempData["Error"]</span>
+        </div>
+    }
+
+    <!-- Success Message -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="mb-6 p-4 rounded-xl bg-green-50 border-l-4 border-green-500 text-green-800 flex items-center gap-3 shadow-lg">
+            <svg class="h-6 w-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="font-medium">@TempData["Success"]</span>
+        </div>
+    }
+
+        <!-- Add Category Form -->
+        <div class="lg:col-span-1">
+            <div class="card-modern rounded-2xl shadow-xl p-6 sticky top-6">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add Category
+                    </h2>
+                    <p class="text-gray-600 text-sm mt-1">Create a new category</p>
+                </div>
+
+                <partial name="_AddCat.cshtml" model="new Category()" />
+            </div>
+        </div>
+
+    <div class="grid grid-cols-1 gap-6 w-full">
+
+        <!-- Categories Table -->
+        <div class="lg:col-span-2">
+            <div class="card-modern rounded-2xl shadow-xl p-6">
+
+                <!-- Header -->
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        All Categories
+                    </h2>
+                    <p class="text-gray-600 text-sm mt-1">Manage and organize blog categories</p>
+                </div>
+
+             
+                @if (Model != null && Model.Any())
+                {
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="border-b-2 border-gray-200">
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">#</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Category Name</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Creation Date</th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Posts</th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach (var category in Model)
+                                {
+                                    counter++;
+                                    <tr class="table-row" data-name="@category.Name">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="text-sm font-bold text-gray-900">@counter</span>
+                                        </td>
+
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                    <span class="text-white font-bold text-sm">
+                                                        @category.Name.Substring(0, Math.Min(2, category.Name.Length)).ToUpper()
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <div class="text-sm font-bold text-gray-900">@category.Name</div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900 font-medium">@category.CreationDate.ToString("dd MMM yyyy")</div>
+                                            <div class="text-xs text-gray-500">@category.CreationDate.ToString("hh:mm tt")</div>
+                                        </td>
+
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold bg-indigo-100 text-indigo-800">
+                                                @(category.Posts?.Count() ?? 0)
+                                            </span>
+                                        </td>
+
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <form asp-action="Delete" method="post"
+                                                  onsubmit="return confirm('Are you sure you want to delete @category.Name? All posts in this category will be affected.');"
+                                                  class="inline">
+                                                <input type="hidden" name="id" value="@category.Id" />
+                                                <button type="submit"
+                                                        class="inline-flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-100 hover:text-red-700 transition">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <!-- Empty State -->
+                    <div class="text-center py-16">
+                        <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        <p class="text-gray-500 text-xl font-medium mb-2">No categories found</p>
+                        <p class="text-gray-400 text-sm mb-6">Start by creating your first category</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
-
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        $(function () {
-            $.validator.unobtrusive.parse("form");
-        });
-    </script>
-
 }

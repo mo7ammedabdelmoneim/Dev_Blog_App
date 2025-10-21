@@ -8,7 +8,6 @@ using Source.Models;
 
 namespace Interface.Controllers
 {
-    [Authorize]
     public class AdminController : Controller
     {
         private readonly ApplicationContext context;
@@ -20,6 +19,7 @@ namespace Interface.Controllers
             this.userManager = userManager;
         }
 
+        [Authorize(Roles = "admin,manage_posts")]
         public async Task<IActionResult> Index()
         {
             var totalUsers = await context.Users.CountAsync();
@@ -83,27 +83,33 @@ namespace Interface.Controllers
                 TopPostTitle = mostReactedPost?.Title ?? "N/A"
             };
 
+            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var UserRole = await userManager.GetRolesAsync(admin);
+            ViewBag.Role = UserRole.FirstOrDefault();
+
             return View(model);
         }
 
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Stats()
         {
             var monthlyUserGrowth = await context.Users
                 .GroupBy(u => new { u.CreatedAt.Year, u.CreatedAt.Month })
-                .Select(g => new
+                .Select(g => new GrowthItem
                 {
                     Month = $"{g.Key.Month}/{g.Key.Year}",
                     Count = g.Count()
-                }).ToListAsync();
+                })
+                .ToListAsync();
 
             var monthlyPostGrowth = await context.Posts
                 .GroupBy(p => new { p.CreationDate.Year, p.CreationDate.Month })
-                .Select(g => new
+                .Select(g => new GrowthItem
                 {
                     Month = $"{g.Key.Month}/{g.Key.Year}",
                     Count = g.Count()
-                }).ToListAsync();
+                })
+                .ToListAsync();
 
             var postsWithComments = await context.Posts
                 .Include(p => p.Comments)
@@ -119,9 +125,9 @@ namespace Interface.Controllers
                 : 0;
 
             var topCategories = await context.Categories
-                .Select(c => new
+                .Select(c => new CategoryItem
                 {
-                    c.Name,
+                    Name = c.Name,
                     PostCount = c.Posts.Count()
                 })
                 .OrderByDescending(c => c.PostCount)
@@ -132,7 +138,7 @@ namespace Interface.Controllers
                 from role in context.Roles
                 join userRole in context.UserRoles on role.Id equals userRole.RoleId
                 group userRole by role.Name into g
-                select new
+                select new RoleItem
                 {
                     RoleName = g.Key,
                     Count = g.Count()
@@ -149,8 +155,13 @@ namespace Interface.Controllers
                 RoleCounts = roleCounts
             };
 
+            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var UserRole = await userManager.GetRolesAsync(admin);
+            ViewBag.Role = UserRole.FirstOrDefault();
+
             return View(model);
         }
+
 
 
     }

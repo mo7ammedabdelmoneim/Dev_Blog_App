@@ -1,5 +1,6 @@
 ﻿using Interface.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,18 +10,24 @@ using System.Security.Claims;
 
 namespace Interface.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "admin,manage_posts")]
     public class AdminPostsController : Controller
     {
         private readonly ApplicationContext context;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public AdminPostsController(ApplicationContext context)
+        public AdminPostsController(ApplicationContext context, UserManager<ApplicationUser> userManager)
         {
             this.context = context;
+            this.userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
+            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var UserRole = await userManager.GetRolesAsync(admin);
+            ViewBag.Role = UserRole.FirstOrDefault();
+
             return View(context.Posts.Include(p => p.Tags).Include(p => p.Category).Include(p => p.User).ToList());
         }
 
@@ -33,7 +40,11 @@ namespace Interface.Controllers
 
             ViewBag.Tags = await context.Tags
                                         .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
-                                        .ToListAsync();
+            .ToListAsync();
+
+            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var UserRole = await userManager.GetRolesAsync(admin);
+            ViewBag.Role = UserRole.FirstOrDefault();
 
             return View(new AddPostViewModel());
         }
@@ -133,6 +144,11 @@ namespace Interface.Controllers
             ViewBag.Tags = await context.Tags
                                         .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
                                         .ToListAsync();
+
+            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var UserRole = await userManager.GetRolesAsync(admin);
+            ViewBag.Role = UserRole.FirstOrDefault();
+
             return View(model);
 
         }
@@ -164,6 +180,10 @@ namespace Interface.Controllers
             if (post == null)
                 return NotFound();
 
+            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var UserRole = await userManager.GetRolesAsync(admin);
+            ViewBag.Role = UserRole.FirstOrDefault();
+
             return View("Add", post);
         }
 
@@ -187,6 +207,10 @@ namespace Interface.Controllers
             context.RemoveRange(post.Comments);
             context.Remove(post);
             await context.SaveChangesAsync();
+
+            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var UserRole = await userManager.GetRolesAsync(admin);
+            ViewBag.Role = UserRole.FirstOrDefault();
 
             return RedirectToAction("Index");
         }

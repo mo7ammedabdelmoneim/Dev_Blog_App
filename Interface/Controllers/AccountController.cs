@@ -106,6 +106,9 @@ namespace Interface.Controllers
 
                     if (result.Succeeded)
                     {
+                        if (User.IsInRole("admin") || User.IsInRole("manage_posts"))
+                            return RedirectToAction("Index", "Admin");
+
                         return RedirectToAction("Index", "Post");
                     }
 
@@ -209,32 +212,6 @@ namespace Interface.Controllers
             await signInManager.SignInAsync(user, isPersistent: false);
 
             return RedirectToAction("Index", "Post");
-        }
-
-
-
-
-        // URL: /Account/CreateUser?username=ali
-        public async Task<IActionResult> CreateUser(string username)
-        {
-            if (string.IsNullOrWhiteSpace(username))
-                return BadRequest("Username is required.");
-            string email = username + "@test.com";
-            string password = "Test@123"; // باسورد ثابت للتجريب
-            var existingUser = await userManager.FindByNameAsync(username);
-            if (existingUser != null)
-                return BadRequest("User already exists.");
-            var user = new ApplicationUser
-            {
-                UserName = username,
-                Email = email
-            };
-            var result = await userManager.CreateAsync(user, password);
-            if (result.Succeeded)
-            {
-                return Ok("User created successfully with ID: " + user.Id);
-            }
-            return BadRequest("Failed to create user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
         }
     }
 }

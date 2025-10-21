@@ -21,7 +21,7 @@ namespace Interface.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IPostService postService;
 
-        public PostController(ApplicationContext context, UserManager<ApplicationUser> userManager, IPostService postService)
+        public PostController(ApplicationContext context, UserManager<ApplicationUser> userManager, IPostService postService,RoleManager<IdentityRole> roleManager )
         {
             this.context = context;
             this.userManager = userManager;
@@ -195,20 +195,6 @@ namespace Interface.Controllers
             return View(data);
         }
 
-
-        public IActionResult add()
-        {
-            context.Add(new Comment
-            {
-                Id = Guid.NewGuid(),
-                UserId = "0c5e4bab-71e7-4902-8dca-8ed359b1e793",
-                PostId = context.Posts.First().Id,
-                Content = "kbjkjdkjvfkjf"
-            });
-
-            context.SaveChanges();
-            return Content("true");
-        }
 
         private async Task<PostViewModel> MapToPostViewModel(Post post)
             {

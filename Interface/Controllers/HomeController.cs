@@ -1,5 +1,6 @@
 using Interface.Models;
 using Interface.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PuppeteerSharp;
@@ -22,8 +23,13 @@ namespace Interface.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if(User.IsInRole("admin") || User.IsInRole("manage_posts"))
+                return RedirectToAction("Index","Admin");
+
+
             if(User.Identity.IsAuthenticated)
                 return RedirectToAction("Index","Post");
+
 
             var homePagePosts = await context.Posts.Include(p => p.User).Include(p => p.Tags)
                                                  .OrderByDescending(p => p.CreationDate)

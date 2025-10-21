@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using source;
@@ -6,18 +7,24 @@ using Source.Models;
 
 namespace Interface.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="admin")]
     public class AdminCategoriesController : Controller
     {
         private readonly ApplicationContext context;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public AdminCategoriesController(ApplicationContext context)
+        public AdminCategoriesController(ApplicationContext context, UserManager<ApplicationUser> userManager)
         {
             this.context = context;
+            this.userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
+            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var UserRole = await userManager.GetRolesAsync(admin);
+            ViewBag.Role = UserRole.FirstOrDefault();
+
             return View(await context.Categories.Include(c => c.Posts).ToListAsync());
         }
 
@@ -33,7 +40,11 @@ namespace Interface.Controllers
                 await context.AddAsync(fromReq);
                 await context.SaveChangesAsync();
             }
-           
+
+            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var UserRole = await userManager.GetRolesAsync(admin);
+            ViewBag.Role = UserRole.FirstOrDefault();
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -63,6 +74,10 @@ namespace Interface.Controllers
             }
             context.Categories.Remove(cat);
             await context.SaveChangesAsync();
+
+            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var UserRole = await userManager.GetRolesAsync(admin);
+            ViewBag.Role = UserRole.FirstOrDefault();
 
             return RedirectToAction(nameof(Index));
 

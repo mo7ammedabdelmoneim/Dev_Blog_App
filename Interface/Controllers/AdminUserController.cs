@@ -9,7 +9,7 @@ using System;
 
 namespace Interface.Controllers
 {
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     public class AdminUsersController : Controller
     {
         private readonly ApplicationContext context;
@@ -60,6 +60,10 @@ namespace Interface.Controllers
 
             ViewBag.Roles = _roleManager.Roles.Select(r => r.Name).ToList();
 
+            var admin = await _userManager.FindByNameAsync(User?.Identity?.Name);
+            var UserRole = await _userManager.GetRolesAsync(admin);
+            ViewBag.Role = UserRole.FirstOrDefault();
+
             return View(userList);
         }
 
@@ -91,6 +95,10 @@ namespace Interface.Controllers
 
                 await _userManager.DeleteAsync(user);
             }
+
+            var admin = await _userManager.FindByNameAsync(User?.Identity?.Name);
+            var UserRole = await _userManager.GetRolesAsync(admin);
+            ViewBag.Role = UserRole.FirstOrDefault();
 
             return RedirectToAction(nameof(Index));
         }
