@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using source;
 using Source.Models;
 using System;
+using System.Security.Claims;
 
 namespace Interface.Controllers
 {
@@ -60,7 +61,7 @@ namespace Interface.Controllers
 
             ViewBag.Roles = _roleManager.Roles.Select(r => r.Name).ToList();
 
-            var admin = await _userManager.FindByNameAsync(User?.Identity?.Name);
+            var admin = await _userManager.FindByEmailAsync(User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value);
             var UserRole = await _userManager.GetRolesAsync(admin);
             ViewBag.Role = UserRole.FirstOrDefault();
 
@@ -70,15 +71,40 @@ namespace Interface.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateRole(string userId, string newRole)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null || string.IsNullOrEmpty(newRole))
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(newRole))
+            {
+                TempData["Message"] = "Invalid data provided.";
                 return RedirectToAction(nameof(Index));
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                TempData["Message"] = "User not found.";
+                return RedirectToAction(nameof(Index));
+            }
 
             var oldRoles = await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, oldRoles);
-            await _userManager.AddToRoleAsync(user, newRole);
 
-            TempData["Message"] = $"Role updated successfully for {user.UserName}!";
+            if (oldRoles.Any())
+            {
+                var removeResult = await _userManager.RemoveFromRolesAsync(user, oldRoles);
+                if (!removeResult.Succeeded)
+                {
+                    TempData["Message"] = "Failed to remove old roles.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
+            var addResult = await _userManager.AddToRoleAsync(user, newRole);
+            if (!addResult.Succeeded)
+            {
+                TempData["Message"] = "Failed to add the new role.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            TempData["Message"] = $" Role updated successfully for {user.UserName}!";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -96,7 +122,7 @@ namespace Interface.Controllers
                 await _userManager.DeleteAsync(user);
             }
 
-            var admin = await _userManager.FindByNameAsync(User?.Identity?.Name);
+            var admin = await _userManager.FindByEmailAsync(User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value);
             var UserRole = await _userManager.GetRolesAsync(admin);
             ViewBag.Role = UserRole.FirstOrDefault();
 

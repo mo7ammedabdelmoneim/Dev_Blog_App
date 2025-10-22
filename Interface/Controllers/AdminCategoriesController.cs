@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using source;
 using Source.Models;
+using System.Security.Claims;
 
 namespace Interface.Controllers
 {
@@ -21,7 +22,7 @@ namespace Interface.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var admin = await userManager.FindByEmailAsync(User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value);
             var UserRole = await userManager.GetRolesAsync(admin);
             ViewBag.Role = UserRole.FirstOrDefault();
 
@@ -41,7 +42,7 @@ namespace Interface.Controllers
                 await context.SaveChangesAsync();
             }
 
-            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var admin = await userManager.FindByEmailAsync(User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value);
             var UserRole = await userManager.GetRolesAsync(admin);
             ViewBag.Role = UserRole.FirstOrDefault();
 
@@ -75,7 +76,7 @@ namespace Interface.Controllers
             context.Categories.Remove(cat);
             await context.SaveChangesAsync();
 
-            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var admin = await userManager.FindByEmailAsync(User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value);
             var UserRole = await userManager.GetRolesAsync(admin);
             ViewBag.Role = UserRole.FirstOrDefault();
 

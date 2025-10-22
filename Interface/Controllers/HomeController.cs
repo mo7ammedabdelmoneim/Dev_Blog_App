@@ -23,10 +23,6 @@ namespace Interface.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if(User.IsInRole("admin") || User.IsInRole("manage_posts"))
-                return RedirectToAction("Index","Admin");
-
-
             if(User.Identity.IsAuthenticated)
                 return RedirectToAction("Index","Post");
 

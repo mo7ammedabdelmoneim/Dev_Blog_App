@@ -24,7 +24,7 @@ namespace Interface.Controllers
 
         public async Task<IActionResult> IndexAsync()
         {
-            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var admin = await userManager.FindByEmailAsync(User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value);
             var UserRole = await userManager.GetRolesAsync(admin);
             ViewBag.Role = UserRole.FirstOrDefault();
 
@@ -42,7 +42,7 @@ namespace Interface.Controllers
                                         .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
             .ToListAsync();
 
-            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var admin = await userManager.FindByEmailAsync(User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value);
             var UserRole = await userManager.GetRolesAsync(admin);
             ViewBag.Role = UserRole.FirstOrDefault();
 
@@ -145,7 +145,7 @@ namespace Interface.Controllers
                                         .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
                                         .ToListAsync();
 
-            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var admin = await userManager.FindByEmailAsync(User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value);
             var UserRole = await userManager.GetRolesAsync(admin);
             ViewBag.Role = UserRole.FirstOrDefault();
 
@@ -180,7 +180,7 @@ namespace Interface.Controllers
             if (post == null)
                 return NotFound();
 
-            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var admin = await userManager.FindByEmailAsync(User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value);
             var UserRole = await userManager.GetRolesAsync(admin);
             ViewBag.Role = UserRole.FirstOrDefault();
 
@@ -208,7 +208,7 @@ namespace Interface.Controllers
             context.Remove(post);
             await context.SaveChangesAsync();
 
-            var admin = await userManager.FindByNameAsync(User?.Identity?.Name);
+            var admin = await userManager.FindByEmailAsync(User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value);
             var UserRole = await userManager.GetRolesAsync(admin);
             ViewBag.Role = UserRole.FirstOrDefault();
 

@@ -98,7 +98,7 @@ namespace Interface.Controllers
                 if (user != null)
                 {
                     var result = await signInManager.PasswordSignInAsync(
-                    user.UserName,
+                    user.Email,
                     model.Password,
                     model.RememberMe,
                     lockoutOnFailure: true
@@ -117,6 +117,7 @@ namespace Interface.Controllers
                         ModelState.AddModelError("", "Account locked. Try again later.");
                         return View(model);
                     }
+
                 }
 
                 ModelState.AddModelError("", "Email or Password is incorrect.");

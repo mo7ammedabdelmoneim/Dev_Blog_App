@@ -74,6 +74,9 @@ namespace Interface.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(string slug)
         {
+            //Categories DropDown
+            ViewBag.Categories = context.Categories.ToList();
+
             var post = await postService.GetBySlug(slug);
             if (post == null)
             {
@@ -118,6 +121,7 @@ namespace Interface.Controllers
         [Authorize]
         public async Task<IActionResult> UnReact(Guid postId)
         {
+
             var userId = User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
             var react = await context.PostReactes.FirstOrDefaultAsync(pc => pc.PostId == postId && pc.UserId == userId) ;
@@ -137,6 +141,9 @@ namespace Interface.Controllers
         [HttpGet]
         public async Task<IActionResult> ByTag(string tag, int pageNumber = 1)
         {
+            //Categories DropDown
+            ViewBag.Categories = context.Categories.ToList();
+
             if (string.IsNullOrWhiteSpace(tag))
                 return RedirectToAction("Index");
 
@@ -167,6 +174,9 @@ namespace Interface.Controllers
         [HttpGet]
         public async Task<IActionResult> ByCategory(string category, int pageNumber = 1)
         {
+            //Categories DropDown
+            ViewBag.Categories = context.Categories.ToList();
+
             if (string.IsNullOrWhiteSpace(category))
                 return RedirectToAction("Index");
 
@@ -198,7 +208,7 @@ namespace Interface.Controllers
 
         private async Task<PostViewModel> MapToPostViewModel(Post post)
             {
-            var reacts = await context.PostReactes.CountAsync(pr => pr.PostId == post.Id);
+                var reacts = await context.PostReactes.CountAsync(pr => pr.PostId == post.Id);
                 return new PostViewModel
                 {
                     PostId = post.Id,
